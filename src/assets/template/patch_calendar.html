@@ -1,0 +1,16 @@
+<div class="card">
+    <div class="div-title-bar">
+        <h3 class="text-title" id="${calendar_month_id}">${calendar_month_title}</h3>
+        <span class="button-unrecognized" style="visibility:${button_visibility};" onclick="previewPhotos('${yyyyMMdd}')">未识别${unrecognizedCount}张</span>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th>
+        </tr>
+        </thead>
+        <tbody id="calendar-body">
+            ${calendar_month_body}
+        </tbody>
+    </table>
+</div>

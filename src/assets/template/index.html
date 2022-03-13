@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>PhotosCalendar</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    table, th, td {
+        border-collapse: collapse;
+        border: 1px solid #E1E2E5;
+        padding: 0px;
+    }
+    th, td {
+        text-align: center;
+        width: 50px;
+        height: 40px;
+    }
+    h5 {
+        padding: 10px;
+    }
+    li {
+        padding: 10px;
+    }
+    a {
+        color: #000000;
+        text-decoration:none;
+    }
+    a:hover {
+        color: #0000FF;
+    }
+    #div-root-page {
+        width: 100%;
+        display: flex;
+    }
+    #div-summary-placeholder {
+        width: 30%;
+    }
+    #div-summary {
+        width: 30%;
+        height: 100%;
+        position: fixed;
+        overflow: scroll;
+        margin: 0;
+    }
+    #div-calendar {
+        width: 40%;
+        border-left: 2px solid #E1E2E5;
+        border-right: 2px solid #E1E2E5;
+    }
+    #div-preview {
+        width: 30%;
+        height: 100%;
+        position: fixed;
+        margin-left: 70%;
+        overflow: scroll;
+    }
+    .div-img-preview {
+        width: 80%;
+        height: 0;
+        padding-bottom: 60%;
+        position: relative;
+        margin: 10px;
+        background-color: #E1E2E5;
+        border: 2px solid #E1E2E5;
+    }
+    .img-preview {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        object-fit: contain;
+        top: 0;
+        left: 0;
+    }
+    .cell-day.count1 {
+        background-color: #FF9F90;
+    }
+    .cell-day.count5 {
+        background-color: #FF4C30;
+    }
+    .cell-day.count10 {
+        background-color: #FF3414;
+    }
+    .cell-day:hover {
+        cursor: pointer;
+    }
+    .card {
+        margin: auto;
+        width: 350px;
+        border: 1px solid #E1E2E5;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+    .card-header {
+        background-color: #F7F7F7;
+        margin: 0;
+        padding: 10px;
+    }
+    .div-title-bar {
+        width: 100%;
+        display: flex;
+        background-color: #F7F7F7;
+    }
+    .text-title {
+        margin: 0;
+        padding: 10px;
+    }
+    .button-unrecognized {
+        background-color: #DDDDDD;
+        padding: 10px;
+    }
+    .button-unrecognized:hover {
+        cursor: pointer;
+    }
+    </style>
+    <script type="text/javascript">
+        var photosPathMap = {
+            ${photosMapJS}
+        }
+        function previewPhotos(date) {
+            var imageContent = "";
+            var albums = photosPathMap["photos" + date];
+            for (var i = 0; i < albums.length; i++) {
+                var imgPath = albums[i];
+                imageContent += ("<div class=\"div-img-preview\"><img class=\"img-preview\" title=\"" + imgPath + "\" src=\"" + imgPath + "\" /></div>");
+            }
+            document.getElementById("div-preview").innerHTML = "<h3 class=\"card-header\">预览【" + date + "】（" + albums.length + "张）</h3>" + imageContent;
+        }
+    </script>
+</head>
+<body>
+    <div id="div-summary">
+        ${summaryHTML}
+    </div>
+    <div id="div-preview">
+        <h3 class="card-header">照片预览区（点击日期查看）</h3>
+    </div>
+    <div id="div-root-page">
+        <div id="div-summary-placeholder">
+        </div>
+        <div id="div-calendar">
+            ${calendarHTML}
+        </div>
+    </div>
+</body>
+</html>
