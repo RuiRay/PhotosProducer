@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # param 1: input directory
-# sh /Users/xxx/src/shell/runDuplicateFileCleanTask.sh /xxx/input
+# sh /Users/xxx/src/shell/runDuplicateFileCleanTask.sh /xxx/inputDir /xxx/report.txt
 
 ####################################### content #########################################
 

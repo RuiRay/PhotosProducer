@@ -92,6 +92,7 @@ public class ReduceImageSizeTask {
             return 0;
         }
 
+        final long savedSize = imageOriginSize - outputFile.length();
         File trashDirectory = new File(imageFile.getParentFile(), "trash");
         if (!trashDirectory.exists()) {
             trashDirectory.mkdirs();
@@ -101,7 +102,7 @@ public class ReduceImageSizeTask {
         if (OVERWRITE_FILE) {
             outputFile.renameTo(new File(outputDirectory.getParent(), outputFile.getName()));
         }
-        return imageOriginSize - outputFile.length();
+        return savedSize;
     }
 
     // 缩减图片到不同的目录

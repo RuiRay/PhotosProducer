@@ -1,27 +1,8 @@
 #!/bin/bash
 
-# param 1: export disk dir
-# param 2: export file log
-# param 3: photos directory
-# param 4: photos directory
-# ...
-# sh /Users/xxx/src/shell/runSyncPhotosTask.sh /xxx/outputDir/ /xxx/outputDir/PhoneFile.log /sdcard/DCIM/Camera1
-
-####################################### check #########################################
-
-firstActiveDevice=`adb devices|sed -n 2p|grep device`
-if [ -z "${firstActiveDevice}" ]; then
-    echo '请先使用 adb 连接手机，并确认手机已进入「开发者模式」'
-    adb devices
-    exit 1
-fi
-
-secondActiveDevice=`adb devices|sed -n 3p|grep device`
-if [ -n "${secondActiveDevice}" ]; then
-    echo '通过 adb 连接到电脑的设备有多个，请只保留一个'
-    adb devices
-    exit 1
-fi
+# param 1: input dir
+# param 2: output dir
+# sh /Users/xxx/src/shell/runReduceImageSizeTask.sh /xxx/inputDir/ /xxx/outputDir/
 
 ####################################### content #########################################
 
@@ -36,11 +17,11 @@ mkdir build/
 
 # dir: project/src/java/
 cd src/java/
-javac -encoding UTF-8 -d ../../build task/SyncPhotosTask.java
+javac -encoding UTF-8 -d ../../build task/ReduceImageSizeTask.java
 
 # dir: project/  System.getProperty("user.dir")
 cd ${projectDir}
-java -DuseCache=false -classpath ./build/ task.SyncPhotosTask $@
+java -classpath ./build/ task.ReduceImageSizeTask $@
 
 echo "shell: done."
 
