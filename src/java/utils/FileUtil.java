@@ -32,7 +32,8 @@ public class FileUtil {
         }
         BufferedReader bReader = null;
         try {
-            bReader = new BufferedReader(new FileReader(file));
+            InputStreamReader reader = new InputStreamReader(new FileInputStream(file), "utf-8");
+            bReader = new BufferedReader(reader);
             String line;
             while ((line = bReader.readLine()) != null) {
                 if (!readerCallback.onReadLine(line)) {
@@ -206,13 +207,12 @@ public class FileUtil {
      * 计算文件的 MD5 值，结果字符串的长度是32
      * @return  eg: b8d1918f3ba631d6bec87541f042df42
      */
-    public static String getFileMD5(String filePath) {
+    public static String getFileMD5(File file) {
         FileInputStream fileInputStream = null;
         try {
             byte[] buffer = new byte[8192];
             int length;
             MessageDigest md = MessageDigest.getInstance("MD5");
-            File file = new File(filePath);
             fileInputStream = new FileInputStream(file);
             while ((length = fileInputStream.read(buffer)) != -1) {
                 md.update(buffer, 0, length);

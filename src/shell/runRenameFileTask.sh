@@ -18,7 +18,7 @@ mkdir build/
 
 # dir: project/src/java/
 cd src/java/
-javac -Djava.ext.dirs=../libs/ -d ../../build task/RenameFileTask.java
+javac -encoding UTF-8 -Djava.ext.dirs=../libs/ -d ../../build task/RenameFileTask.java
 
 # dir: project/  System.getProperty("user.dir")
 cd ${projectDir}

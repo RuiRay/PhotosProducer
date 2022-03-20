@@ -36,7 +36,7 @@ mkdir build/
 
 # dir: project/src/java/
 cd src/java/
-javac -d ../../build task/SyncPhotosTask.java
+javac -encoding UTF-8 -d ../../build task/SyncPhotosTask.java
 
 # dir: project/  System.getProperty("user.dir")
 cd ${projectDir}

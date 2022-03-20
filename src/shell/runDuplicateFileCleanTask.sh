@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# param 1: index.html
-# param 2: photos directory
-# param 3: photos directory
-# ...
-# sh /Users/xxx/src/shell/runPhotosCalendarTask.sh /xxx/outputDir/index.html /xxx/photosDir1/ /xxx/photosDir2/
+# param 1: input directory
+# sh /Users/xxx/src/shell/runDuplicateFileCleanTask.sh /xxx/input
 
 ####################################### content #########################################
 
@@ -19,11 +16,11 @@ mkdir build/
 
 # dir: project/src/java/
 cd src/java/
-javac -encoding UTF-8 -d ../../build task/PhotosCalendarTask.java
+javac -encoding UTF-8 -d ../../build task/DuplicateFileCleanTask.java
 
 # dir: project/  System.getProperty("user.dir")
 cd ${projectDir}
-java -DuseCache=false -classpath ./build/ task.PhotosCalendarTask $@
+java -classpath ./build/ task.DuplicateFileCleanTask $@
 
 echo "shell: done."
 
