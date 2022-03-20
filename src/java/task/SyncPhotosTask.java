@@ -78,8 +78,8 @@ public class SyncPhotosTask {
         }
 
         // 统计打印
-        long totalFileSize = phoneMediaFileList.stream().mapToLong(mediaFile -> mediaFile.fileSize).sum();
-        long prepareFileSize = prepareExportMediaFileList.stream().mapToLong(mediaFile -> mediaFile.fileSize).sum();
+        long totalFileSize = getTotalFileSize(phoneMediaFileList);
+        long prepareFileSize = getTotalFileSize(prepareExportMediaFileList);
         System.out.println("================================================");
         System.out.println(String.format("=== 照片数：（%d/%d），文件大小：（%s/%s）",
                 phoneMediaFileList.size() - prepareExportMediaFileList.size(), phoneMediaFileList.size(),
@@ -171,7 +171,7 @@ public class SyncPhotosTask {
         logSB.append(FileUtil.readFile(logFilePath)).append("\n");
         logSB.append(createExportHeadInfo(exportDir, phonePhotosDirs, logFilePath));
         File logFile = new File(logFilePath);
-        final long totalFileSize = mediaFileList.stream().mapToLong(mediaFile -> mediaFile.fileSize).sum();
+        final long totalFileSize = getTotalFileSize(mediaFileList);
         long pullFileSize = 0;
 
         for (int i = 0; i < mediaFileList.size(); i++) {
@@ -212,8 +212,16 @@ public class SyncPhotosTask {
         if (suffixIndex == -1) {
             return false;
         }
-        String suffix = fileName.substring(suffixIndex).toLowerCase();
+        String suffix = fileName.substring(suffixIndex + 1).toLowerCase();
         return SUPPORT_MEDIA_TYPE.contains(suffix);
+    }
+
+    private static long getTotalFileSize(List<MediaFile> phoneMediaFileList) {
+        long totalFileSize = 0;
+        for (MediaFile mediaFile : phoneMediaFileList) {
+            totalFileSize += mediaFile.fileSize;
+        }
+        return totalFileSize;
     }
 
     public class MediaFile {
