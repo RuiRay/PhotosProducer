@@ -57,6 +57,30 @@
         margin-left: 70%;
         overflow: scroll;
     }
+    #div-fullscreen-preview {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        display: none;
+    }
+    #div-fullscreen-contain {
+        width: 80%;
+        height: 100%;
+        margin: auto;
+        background: rgba(0, 0, 0, 0.6);
+    }
+    #img-fullscreen {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        object-fit: contain;
+        top: 0;
+        left: 0;
+    }
     .div-img-preview {
         width: 80%;
         height: 0;
@@ -248,25 +272,38 @@
             var albums = photosPathMap["photos" + date];
             for (var i = 0; i < albums.length; i++) {
                 var imgPath = albums[i];
-                imageContent += ("<div class=\"div-img-preview\"><img class=\"img-preview\" title=\"" + imgPath + "\" src=\"" + imgPath + "\" /></div>");
+                var previewWidget = "";
+                if (imgPath.endsWith(".mp4")) {
+                    previewWidget = "<video class=\"img-preview\" controls><source src=\"" + imgPath + "\" type=\"video/mp4\"></video>";
+                } else {
+                    previewWidget = "<img class=\"img-preview\" title=\"" + imgPath + "\" src=\"" + imgPath + "\" onclick=\"showFullScreen('" + imgPath + "')\" />";
+                }
+                imageContent += ("<div class=\"div-img-preview\">" + previewWidget + "</div>");
             }
             document.getElementById("div-preview").innerHTML = "<h3 class=\"card-header\">预览【" + date + "】（" + albums.length + "张）</h3>" + imageContent;
+        }
+        function showFullScreen(imgPath) {
+        	document.getElementById("div-fullscreen-preview").style.display = "inline";
+        	document.getElementById("img-fullscreen").src = imgPath;
+        }
+        function dismissFullScreen() {
+        	document.getElementById("div-fullscreen-preview").style.display = "none";
         }
     </script>
 </head>
 <body>
-    <div id="div-summary">
-        <h3 class="card-header">总览</h3>
-		<h5>照片总数：236张【310 KB】</h5>
+<div id="div-summary">
+    <h3 class="card-header">总览</h3>
+		<h5>照片总数：236张【316 KB】</h5>
 		<h5>起止日期：2020年10月 - 2022年2月</h5>
-		<h5>文档创建日期：2022-03-12 22:01</h5>
+		<h5>文档创建日期：2023-06-17 16:20</h5>
 		<h5 class="card-header">无照片的月份</h5>
 		<li><a href="#idYear2021">2021年：3月</a></li>
 		<h5 class="card-header">照片较少的月份</h5>
 		<li><a href="#idYear2020">2020年：11月</a></li>
 		<li><a href="#idYear2021">2021年：5月, 6月, 7月, 8月, 9月, 10月, 11月, 12月</a></li>
 		<br/><br/><h3 class="card-header">日期目录</h3>
-		<h5 class="card-header"><a href="#idYear2020">2020年【70 KB】</a></h5>
+		<h5 class="card-header"><a href="#idYear2020">2020年【75 KB】</a></h5>
 		<li><a href="#idMonth2020-10">2020-10（36张）</a></li>
 		<li><a href="#idMonth2020-11">2020-11（9张）</a></li>
 		<li><a href="#idMonth2020-12">2020-12（11张）</a></li>
@@ -286,15 +323,15 @@
 		<li><a href="#idMonth2022-01">2022-01（28张）</a></li>
 		<li><a href="#idMonth2022-02">2022-02（14张）</a></li>
 		<br/><br/>
+</div>
+<div id="div-preview">
+    <h3 class="card-header">照片预览区（点击日期查看）</h3>
+</div>
+<div id="div-root-page">
+    <div id="div-summary-placeholder">
     </div>
-    <div id="div-preview">
-        <h3 class="card-header">照片预览区（点击日期查看）</h3>
-    </div>
-    <div id="div-root-page">
-        <div id="div-summary-placeholder">
-        </div>
-        <div id="div-calendar">
-            <h3 class="button-unrecognized" onclick="previewPhotos('00000000')">未识别到年份的照片（8张）</h3>
+    <div id="div-calendar">
+        <h3 class="button-unrecognized" onclick="previewPhotos('00000000')">未识别到年份的照片（8张）</h3>
 <div class="div-title-bar">
 	<h3 class="text-title" id="idYear2020">2020年（63张）</h3>
 	<span class="button-unrecognized" style="visibility:visible;" onclick="previewPhotos('20200000')">未识别7张</span>
@@ -1253,7 +1290,12 @@
     </table>
 </div>
 
-        </div>
     </div>
+</div>
+<div id="div-fullscreen-preview" onclick="dismissFullScreen()">
+    <div id="div-fullscreen-contain">
+        <img id="img-fullscreen"/>
+    </div>
+</div>
 </body>
 </html>

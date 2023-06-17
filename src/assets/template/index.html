@@ -57,6 +57,30 @@
         margin-left: 70%;
         overflow: scroll;
     }
+    #div-fullscreen-preview {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        display: none;
+    }
+    #div-fullscreen-contain {
+        width: 80%;
+        height: 100%;
+        margin: auto;
+        background: rgba(0, 0, 0, 0.6);
+    }
+    #img-fullscreen {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        object-fit: contain;
+        top: 0;
+        left: 0;
+    }
     .div-img-preview {
         width: 80%;
         height: 0;
@@ -124,25 +148,43 @@
             var albums = photosPathMap["photos" + date];
             for (var i = 0; i < albums.length; i++) {
                 var imgPath = albums[i];
-                imageContent += ("<div class=\"div-img-preview\"><img class=\"img-preview\" title=\"" + imgPath + "\" src=\"" + imgPath + "\" /></div>");
+                var previewWidget = "";
+                if (imgPath.endsWith(".mp4")) {
+                    previewWidget = "<video class=\"img-preview\" controls><source src=\"" + imgPath + "\" type=\"video/mp4\"></video>";
+                } else {
+                    previewWidget = "<img class=\"img-preview\" title=\"" + imgPath + "\" src=\"" + imgPath + "\" onclick=\"showFullScreen('" + imgPath + "')\" />";
+                }
+                imageContent += ("<div class=\"div-img-preview\">" + previewWidget + "</div>");
             }
             document.getElementById("div-preview").innerHTML = "<h3 class=\"card-header\">预览【" + date + "】（" + albums.length + "张）</h3>" + imageContent;
+        }
+        function showFullScreen(imgPath) {
+        	document.getElementById("div-fullscreen-preview").style.display = "inline";
+        	document.getElementById("img-fullscreen").src = imgPath;
+        }
+        function dismissFullScreen() {
+        	document.getElementById("div-fullscreen-preview").style.display = "none";
         }
     </script>
 </head>
 <body>
-    <div id="div-summary">
-        ${summaryHTML}
+<div id="div-summary">
+    ${summaryHTML}
+</div>
+<div id="div-preview">
+    <h3 class="card-header">照片预览区（点击日期查看）</h3>
+</div>
+<div id="div-root-page">
+    <div id="div-summary-placeholder">
     </div>
-    <div id="div-preview">
-        <h3 class="card-header">照片预览区（点击日期查看）</h3>
+    <div id="div-calendar">
+        ${calendarHTML}
     </div>
-    <div id="div-root-page">
-        <div id="div-summary-placeholder">
-        </div>
-        <div id="div-calendar">
-            ${calendarHTML}
-        </div>
+</div>
+<div id="div-fullscreen-preview" onclick="dismissFullScreen()">
+    <div id="div-fullscreen-contain">
+        <img id="img-fullscreen"/>
     </div>
+</div>
 </body>
 </html>
