@@ -5,6 +5,7 @@ import utils.imgscalr.Scalr;
 
 import javax.imageio.*;
 import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -22,10 +23,12 @@ import java.util.Set;
  */
 public class ReduceImageSizeTask {
 
-    // 缩减后图片高/宽的最大值，如：2K
-    private static final int TARGET_DIMENSION = 1024 * 2;
-    // 当文件尺寸超出多少时进行缩减，如：1.2MB
-    private static final int TARGET_FILE_SIZE = (int) (1024 * 1024 * 1.2f);
+    // 缩减后图片高/宽的最大值，如：2K（2048×1080）
+    private static final int TARGET_DIMENSION_MAX = 1024 * 2;
+    private static final int TARGET_DIMENSION_MIN = 1080;
+    // 当文件尺寸超出多少时进行缩减，如：0.1MB
+    private static final int TARGET_FILE_SIZE = (int) (1024 * 1024 * 0.1f);
+    private static final float MIN_SCALE_DOWN_RATE = 0.2f;
     // 缩减后的图片是否覆盖原图
     private static final boolean OVERWRITE_FILE = true;
     // 保存的 jpg 图片质量
@@ -66,6 +69,7 @@ public class ReduceImageSizeTask {
                 continue;
             }
             if (file.length() < TARGET_FILE_SIZE) {
+                System.out.println(String.format("file size less %d < %d", file.length(), TARGET_FILE_SIZE));
                 continue;
             }
             long savedSize = task.scaleDownImage(file, outputDir);
@@ -86,7 +90,7 @@ public class ReduceImageSizeTask {
         File outputFile = new File(outputDirectory, imageFile.getName());
 
         final long imageOriginSize = imageFile.length();
-        boolean success = scaleDownImage(imageFile, outputFile, TARGET_DIMENSION);
+        boolean success = scaleDownImage(imageFile, outputFile, TARGET_DIMENSION_MAX, TARGET_DIMENSION_MIN);
         if (!success) {
             outputFile.delete();
             return 0;
@@ -114,7 +118,7 @@ public class ReduceImageSizeTask {
         File outputFile = new File(outputDirectory, imageFile.getName());
 
         final long imageOriginSize = imageFile.length();
-        boolean success = scaleDownImage(imageFile, outputFile, TARGET_DIMENSION);
+        boolean success = scaleDownImage(imageFile, outputFile, TARGET_DIMENSION_MAX, TARGET_DIMENSION_MIN);
         if (!success) {
             outputFile.delete();
             return 0;
@@ -122,7 +126,7 @@ public class ReduceImageSizeTask {
         return imageOriginSize - outputFile.length();
     }
 
-    public boolean scaleDownImage(File imageFile, File outputFile, int targetSize) {
+    public boolean scaleDownImage(File imageFile, File outputFile, float targetMaxSize, float targetMinSize) {
         final String fileSuffix = getFileSuffix(imageFile.getName()).toLowerCase();
         if (fileSuffix.isEmpty()) {
             System.out.println(String.format("scaleDownImage() file suffix not found %s", imageFile));
@@ -133,14 +137,23 @@ public class ReduceImageSizeTask {
             reader.setInput(ImageIO.createImageInputStream(imageFile));
             IIOMetadata metadata = reader.getImageMetadata(0);
             BufferedImage bufferedImage = reader.read(0);
+            int maxSize = Math.max(bufferedImage.getWidth(), bufferedImage.getHeight());
+            int minSize = Math.min(bufferedImage.getWidth(), bufferedImage.getHeight());
+            float scaleRate = Math.max(targetMaxSize / maxSize, targetMinSize / minSize);
 
             // 图片只缩小，不放大
-            if (Math.max(bufferedImage.getWidth(), bufferedImage.getHeight()) < targetSize) {
+            if (scaleRate >= 1) {
                 System.out.println(String.format("scaleDownImage() small image (%d*%d) %s", bufferedImage.getWidth(), bufferedImage.getHeight(), imageFile));
                 return false;
             }
 
-            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.AUTOMATIC, targetSize);
+            // 最小缩放比，避免失真太严重
+            if (scaleRate < MIN_SCALE_DOWN_RATE) {
+                System.out.println(String.format("scaleDownImage() small scale (%d*%d) %s", bufferedImage.getWidth(), bufferedImage.getHeight(), imageFile));
+                scaleRate = MIN_SCALE_DOWN_RATE;
+            }
+
+            bufferedImage = Scalr.resize(bufferedImage, Scalr.Method.AUTOMATIC, (int) (scaleRate * maxSize));
 
             ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(outputFile);
             Iterator<ImageWriter> iterator = ImageIO.getImageWritersByFormatName(fileSuffix);
@@ -152,6 +165,9 @@ public class ReduceImageSizeTask {
                 iwParam = writer.getDefaultWriteParam();
                 iwParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                 iwParam.setCompressionQuality(JPG_OUTPUT_QUALITY);
+                if (iwParam instanceof JPEGImageWriteParam) {
+                    ((JPEGImageWriteParam) iwParam).setOptimizeHuffmanTables(true);
+                }
             }
             writer.write(null, new IIOImage(bufferedImage, null, metadata), iwParam);
             writer.dispose();

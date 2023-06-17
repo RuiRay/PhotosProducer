@@ -110,6 +110,12 @@ public class PhotosCalendar {
         for (File file : listFiles) {
             if (file.isFile()) {
                 String fileName = file.getName().toLowerCase();
+                // 排除 macOS 生成的 ._.DS_Store, 诸如 ._IMG_20150206_104031.jpg 文件
+                if (file.isHidden() && file.length() == 4096 && fileName.startsWith("._")) {
+                    System.out.println("findChildFile() .DS_Store delete!!! -> " + file);
+                    file.delete();
+                    continue;
+                }
                 PhotoType photoType = getPhotoType(fileName);
                 if (photoType == null) {
                     continue;

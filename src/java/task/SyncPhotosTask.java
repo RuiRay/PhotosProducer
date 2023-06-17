@@ -36,6 +36,7 @@ public class SyncPhotosTask {
                 "/sdcard/tencent/MicroMsg/WeiXin",
                 "/sdcard/Picture/知乎",
                 "/sdcard/Tencent/QQ_Images",
+                "/sdcard/DJI/dji.mimo/Camera",
         };
         String exportDiskDir = args[0];
         String exportLogFilePath = args[1];

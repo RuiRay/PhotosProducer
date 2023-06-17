@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  */
 public class PathYYFileDateParser implements FileDateParser {
 
-    private final Pattern pathYearPattern = Pattern.compile(".*?/photos([0-9]{4})/.*");
+    private final Pattern pathYearPattern = Pattern.compile(".*?/\\w+([0-9]{4})/.*");
 
     @Override
     public String parse(String fileName, String filePath) {
